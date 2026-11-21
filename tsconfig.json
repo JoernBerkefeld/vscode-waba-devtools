@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "node20",
+        "target": "ES2022",
+        "lib": ["ES2023"],
+        "outDir": "out",
+        "rootDir": "src",
+        "sourceMap": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "out", "dist", "src/test"]
+}

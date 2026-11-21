@@ -1,0 +1,426 @@
+{
+    "name": "vscode-waba-devtools",
+    "displayName": "WABA DevTools",
+    "description": "Retrieve, deploy, back up and compare WhatsApp Business message templates across WABAs from VS Code, powered by the bundled wabadev CLI.",
+    "author": "Jörn Berkefeld",
+    "license": "MIT",
+    "version": "0.0.1",
+    "preview": true,
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/JoernBerkefeld/vscode-waba-devtools.git"
+    },
+    "bugs": {
+        "url": "https://github.com/JoernBerkefeld/vscode-waba-devtools/issues"
+    },
+    "publisher": "joernberkefeld",
+    "categories": ["Other"],
+    "keywords": ["whatsapp", "waba", "whatsapp business", "message templates", "devops", "wabadev"],
+    "engines": {
+        "vscode": "^1.101.0"
+    },
+    "capabilities": {
+        "virtualWorkspaces": {
+            "supported": false,
+            "description": "WABA DevTools needs an on-disk project and runs local Node.js processes; virtual file systems are not supported."
+        },
+        "untrustedWorkspaces": {
+            "supported": false,
+            "description": "Trust the workspace before WABA DevTools runs processes that change your WhatsApp Business Accounts."
+        }
+    },
+    "main": "./dist/extension.js",
+    "activationEvents": ["workspaceContains:.wabadevrc.json"],
+    "contributes": {
+        "commands": [
+            {
+                "command": "waba-devtools.check",
+                "title": "%command.title.check%",
+                "category": "%command.category%",
+                "icon": "$(pass)"
+            },
+            {
+                "command": "waba-devtools.discover",
+                "title": "%command.title.discover%",
+                "category": "%command.category%"
+            },
+            {
+                "command": "waba-devtools.list",
+                "title": "%command.title.list%",
+                "category": "%command.category%",
+                "icon": "$(list-flat)"
+            },
+            {
+                "command": "waba-devtools.retrieve",
+                "title": "%command.title.retrieve%",
+                "category": "%command.category%",
+                "icon": "$(cloud-download)"
+            },
+            {
+                "command": "waba-devtools.importCsv",
+                "title": "%command.title.importCsv%",
+                "category": "%command.category%",
+                "icon": "$(table)"
+            },
+            {
+                "command": "waba-devtools.deployPreview",
+                "title": "%command.title.deployPreview%",
+                "category": "%command.category%",
+                "icon": "$(eye)"
+            },
+            {
+                "command": "waba-devtools.deploy",
+                "title": "%command.title.deploy%",
+                "category": "%command.category%",
+                "icon": "$(cloud-upload)"
+            },
+            {
+                "command": "waba-devtools.deployFromStage",
+                "title": "%command.title.deployFromStage%",
+                "category": "%command.category%",
+                "icon": "$(arrow-swap)"
+            },
+            {
+                "command": "waba-devtools.deployCsv",
+                "title": "%command.title.deployCsv%",
+                "category": "%command.category%",
+                "icon": "$(cloud-upload)"
+            },
+            {
+                "command": "waba-devtools.deployPrune",
+                "title": "%command.title.deployPrune%",
+                "category": "%command.category%",
+                "icon": "$(trash)"
+            },
+            {
+                "command": "waba-devtools.restore",
+                "title": "%command.title.restore%",
+                "category": "%command.category%",
+                "icon": "$(history)"
+            },
+            {
+                "command": "waba-devtools.backup",
+                "title": "%command.title.backup%",
+                "category": "%command.category%",
+                "icon": "$(save)"
+            },
+            {
+                "command": "waba-devtools.compareBackups",
+                "title": "%command.title.compareBackups%",
+                "category": "%command.category%",
+                "icon": "$(diff)"
+            },
+            {
+                "command": "waba-devtools.compareLive",
+                "title": "%command.title.compareLive%",
+                "category": "%command.category%",
+                "icon": "$(diff)"
+            },
+            {
+                "command": "waba-devtools.compareWabas",
+                "title": "%command.title.compareWabas%",
+                "category": "%command.category%",
+                "icon": "$(diff)"
+            },
+            {
+                "command": "waba-devtools.selectSourceStage",
+                "title": "%command.title.selectSourceStage%",
+                "category": "%command.category%"
+            },
+            {
+                "command": "waba-devtools.selectTargetStage",
+                "title": "%command.title.selectTargetStage%",
+                "category": "%command.category%"
+            },
+            {
+                "command": "waba-devtools.selectStages",
+                "title": "%command.title.selectStages%",
+                "category": "%command.category%"
+            },
+            {
+                "command": "waba-devtools.setToken",
+                "title": "%command.title.setToken%",
+                "category": "%command.category%",
+                "icon": "$(key)"
+            },
+            {
+                "command": "waba-devtools.removeToken",
+                "title": "%command.title.removeToken%",
+                "category": "%command.category%"
+            },
+            {
+                "command": "waba-devtools.refreshStatus",
+                "title": "%command.title.refreshStatus%",
+                "category": "%command.category%",
+                "icon": "$(refresh)"
+            }
+        ],
+        "configuration": {
+            "title": "WABA DevTools",
+            "properties": {
+                "waba-devtools.cliSource": {
+                    "type": "string",
+                    "enum": ["auto", "bundled", "custom"],
+                    "enumDescriptions": [
+                        "The project's own node_modules/waba-devtools if installed, otherwise the bundled CLI.",
+                        "Always the CLI bundled with the extension.",
+                        "Only the bin/wabadev.js set in customCliPath. Never falls back."
+                    ],
+                    "default": "auto",
+                    "description": "Which wabadev CLI the extension runs."
+                },
+                "waba-devtools.customCliPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Absolute path of a waba-devtools bin/wabadev.js, used when cliSource is custom."
+                },
+                "waba-devtools.backupFolder": {
+                    "type": "string",
+                    "default": "backups",
+                    "description": "Folder (relative to the project) for backup sets: deploy backups, restore points and compare."
+                },
+                "waba-devtools.deployBackup": {
+                    "type": "string",
+                    "enum": ["none", "before", "beforeAndAfter"],
+                    "enumDescriptions": [
+                        "No backup.",
+                        "Save every target WABA that is about to change before sending (--backup).",
+                        "Also save each changed WABA after the changes (--backup --backup-after)."
+                    ],
+                    "default": "before",
+                    "description": "Backups taken by deploy, restore and prune."
+                }
+            }
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "waba-devtools",
+                    "title": "WABA DevTools",
+                    "icon": "resources/waba.svg"
+                }
+            ]
+        },
+        "views": {
+            "waba-devtools": [
+                {
+                    "id": "waba-devtools.templates",
+                    "name": "Templates",
+                    "when": "waba-devtools.project"
+                }
+            ]
+        },
+        "submenus": [
+            {
+                "id": "waba-devtools.submenu",
+                "label": "WABA DevTools"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "waba-devtools.check",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.list",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.retrieve",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.importCsv",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.deployPreview",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.deploy",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.deployFromStage",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.deployCsv",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.deployPrune",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.restore",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.backup",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.compareBackups",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.compareLive",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.compareWabas",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.selectSourceStage",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.selectTargetStage",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.selectStages",
+                    "when": "waba-devtools.project"
+                },
+                {
+                    "command": "waba-devtools.refreshStatus",
+                    "when": "waba-devtools.project"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "submenu": "waba-devtools.submenu",
+                    "group": "waba-devtools",
+                    "when": "waba-devtools.project && (resourceExtname == .csv || resourcePath =~ /[\\\\/]templates([\\\\/][^\\\\/]+){0,2}$/ || explorerResourceIsFolder && resourceFilename =~ /^\\d+_\\d{4}-\\d{2}-\\d{2}T[\\d-]+Z_(before|after|manual)$/)"
+                }
+            ],
+            "editor/context": [
+                {
+                    "submenu": "waba-devtools.submenu",
+                    "group": "waba-devtools",
+                    "when": "waba-devtools.project && (resourceExtname == .csv || resourcePath =~ /[\\\\/]templates[\\\\/][^\\\\/]+[\\\\/][^\\\\/]+\\.json$/)"
+                }
+            ],
+            "editor/title/context": [
+                {
+                    "submenu": "waba-devtools.submenu",
+                    "group": "waba-devtools",
+                    "when": "waba-devtools.project && (resourceExtname == .csv || resourcePath =~ /[\\\\/]templates[\\\\/][^\\\\/]+[\\\\/][^\\\\/]+\\.json$/)"
+                }
+            ],
+            "waba-devtools.submenu": [
+                {
+                    "command": "waba-devtools.retrieve",
+                    "group": "1_templates@1",
+                    "when": "resourcePath =~ /[\\\\/]templates([\\\\/][^\\\\/]+){0,2}$/"
+                },
+                {
+                    "command": "waba-devtools.deployPreview",
+                    "group": "1_templates@2",
+                    "when": "resourcePath =~ /[\\\\/]templates([\\\\/][^\\\\/]+){0,2}$/"
+                },
+                {
+                    "command": "waba-devtools.deploy",
+                    "group": "1_templates@3",
+                    "when": "resourcePath =~ /[\\\\/]templates([\\\\/][^\\\\/]+){0,2}$/"
+                },
+                {
+                    "command": "waba-devtools.importCsv",
+                    "group": "2_csv@1",
+                    "when": "resourceExtname == .csv"
+                },
+                {
+                    "command": "waba-devtools.deployCsv",
+                    "group": "2_csv@2",
+                    "when": "resourceExtname == .csv"
+                },
+                {
+                    "command": "waba-devtools.restore",
+                    "group": "3_backup@1",
+                    "when": "explorerResourceIsFolder && resourceFilename =~ /^\\d+_\\d{4}-\\d{2}-\\d{2}T[\\d-]+Z_(before|after|manual)$/"
+                },
+                {
+                    "command": "waba-devtools.compareLive",
+                    "group": "3_backup@2",
+                    "when": "explorerResourceIsFolder && resourceFilename =~ /^\\d+_\\d{4}-\\d{2}-\\d{2}T[\\d-]+Z_(before|after|manual)$/"
+                },
+                {
+                    "command": "waba-devtools.compareBackups",
+                    "group": "3_backup@3",
+                    "when": "explorerResourceIsFolder && resourceFilename =~ /^\\d+_\\d{4}-\\d{2}-\\d{2}T[\\d-]+Z_(before|after|manual)$/"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "waba-devtools.refreshStatus",
+                    "when": "view == waba-devtools.templates",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "waba-devtools.deployPreview",
+                    "when": "view == waba-devtools.templates",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "waba-devtools.check",
+                    "when": "view == waba-devtools.templates",
+                    "group": "navigation@3"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "waba-devtools.deployPreview",
+                    "when": "view == waba-devtools.templates && viewItem == template",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "waba-devtools.deploy",
+                    "when": "view == waba-devtools.templates && viewItem == template",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "waba-devtools.retrieve",
+                    "when": "view == waba-devtools.templates && viewItem == template",
+                    "group": "1_templates@1"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run bundle:cli && npm run esbuild -- --minify",
+        "esbuild": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node22 --sourcemap",
+        "compile": "npm run esbuild && tsc -p tsconfig.test.json",
+        "watch": "npm run esbuild -- --watch",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "node --require ./out/test/test/registerVscodeMock.js --test \"out/test/test/**/*.test.js\"",
+        "test:host": "node scripts/run-host-smoke.mjs",
+        "package": "npx @vscode/vsce package --no-dependencies",
+        "prepare": "husky || true",
+        "bundle:cli": "node scripts/bundle-waba-devtools.mjs",
+        "verify:vsix": "node scripts/verify-vsix.mjs"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@types/node": "^26.6.6",
+        "@types/vscode": "1.101.0",
+        "@vscode/vsce": "^4.1.1",
+        "esbuild": "^0.28.2",
+        "eslint": "^10.15.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-jsdoc": "^65.5.0",
+        "eslint-plugin-prettier": "^5.5.7",
+        "eslint-plugin-unicorn": "^80.0.0",
+        "globals": "^17.14.0",
+        "husky": "^9.1.7",
+        "prettier": "^3.10.1",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.73.0"
+    }
+}

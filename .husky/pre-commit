@@ -1,0 +1,28 @@
+# disable ANSI color codes in hook output (readable in Fork's plain-text log viewer)
+unset FORCE_COLOR
+export NO_COLOR=1
+
+if [ "${SKIP_HOOKS:-0}" -gt 0 ] 2>/dev/null; then
+  echo "[PRE-COMMIT] skipping hooks (SKIP_HOOKS=$SKIP_HOOKS)"
+  exit 0
+fi
+
+echo "[PRE-COMMIT] Running lint..."
+npm run lint --no-workspaces || {
+  echo "[PRE-COMMIT] Lint failed. Run 'npm run lint:fix' and fix the remaining findings."
+  exit 1
+}
+
+echo "[PRE-COMMIT] Running compile..."
+npm run compile --no-workspaces || {
+  echo "[PRE-COMMIT] Compile failed. Fix the errors above and try again."
+  exit 1
+}
+
+echo "[PRE-COMMIT] Running tests..."
+npm test --no-workspaces || {
+  echo "[PRE-COMMIT] Tests failed. Fix them and try again."
+  exit 1
+}
+
+echo "[PRE-COMMIT] All checks passed."

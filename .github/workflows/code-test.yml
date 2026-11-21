@@ -1,0 +1,26 @@
+name: Code Testing
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    build:
+        name: lint & test w/ node v${{ matrix.node }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node: ['24']
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-node@v6
+              with:
+                  node-version: ${{ matrix.node }}
+
+            - run: npm ci --no-workspaces
+            - run: npm run lint
+            - run: npm run compile
+            - run: npm test
