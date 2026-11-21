@@ -11,7 +11,7 @@ const vscode = require('vscode');
  * @returns {Promise<void>} resolves when every check passed
  */
 async function run() {
-    const extension = vscode.extensions.getExtension('joernberkefeld.vscode-waba-devtools');
+    const extension = vscode.extensions.getExtension('joernberkefeld.waba-devtools');
     assert.ok(extension, 'extension found');
     const api = await extension.activate();
     const commands = await vscode.commands.getCommands(true);

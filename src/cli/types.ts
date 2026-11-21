@@ -16,6 +16,10 @@ export interface DeployAction {
     result?: string;
     error?: string;
     statusAfter?: string;
+    /**
+    Hash of the body and the live template it replaces (create/update/delete); checked by `--expect`.
+     */
+    fingerprint?: string;
 }
 
 export interface DeployTarget {

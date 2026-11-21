@@ -161,6 +161,9 @@ export function deployReport(
                 name,
                 language,
                 status: action === 'create' ? undefined : 'APPROVED',
+                fingerprint: ['create', 'update', 'delete'].includes(action)
+                    ? `fp-${action}-${name}-${language}`
+                    : undefined,
             })),
         })),
         ok: options.ok ?? true,

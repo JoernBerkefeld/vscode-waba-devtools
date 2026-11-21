@@ -1,5 +1,5 @@
 {
-    "name": "vscode-waba-devtools",
+    "name": "waba-devtools",
     "displayName": "WABA DevTools",
     "description": "Retrieve, deploy, back up and compare WhatsApp Business message templates across WABAs from VS Code, powered by the bundled wabadev CLI.",
     "author": "Jörn Berkefeld",
