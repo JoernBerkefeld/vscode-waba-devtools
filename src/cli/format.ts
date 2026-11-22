@@ -61,11 +61,24 @@ function deploy(report: DeployReport): string[] {
 function check(report: CheckReport): string[] {
     return [
         'Access check:',
-        ...(report.entries ?? []).map(
-            (entry) =>
-                `  ${entry.ok ? 'OK    ' : 'FAILED'} ${where(entry.wabaId, entry.stage)} ${entry.wabaName ?? ''} [${entry.tokenEnv}]${entry.error ? ` — ${entry.error}` : ''}`,
-        ),
+        ...(report.entries ?? []).flatMap((entry) => [
+            `  ${entry.ok ? 'OK    ' : 'FAILED'} ${where(entry.wabaId, entry.stage)} ${entry.wabaName ?? ''} [${entry.tokenEnv}]${entry.error ? ` — ${entry.error}` : ''}`,
+            ...(entry.warnings ?? []).map((warning) => `    WARN   ${warning.message}`),
+        ]),
     ];
+}
+
+/**
+ * The warnings of a check report, one line per warning with the WABA it belongs to.
+ * @param report check report
+ * @returns {string[]} e.g. `WABA 123 (dev): Meta has disabled this WABA …`
+ */
+export function checkWarnings(report: CheckReport): string[] {
+    return (report.entries ?? []).flatMap((entry) =>
+        (entry.warnings ?? []).map(
+            (warning) => `${where(entry.wabaId, entry.stage)}: ${warning.message}`,
+        ),
+    );
 }
 
 function list(report: ListReport): string[] {

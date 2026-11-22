@@ -258,9 +258,10 @@ export class WabaHost implements vscode.Disposable {
      * Write a report to the output channel and show a short notification.
      * @param outcome the interpreted run
      * @param success notification text when the report is ok
+     * @param warnings shown as a warning notification instead of `success` when the report is ok
      * @returns {boolean} true when it was a report with `ok: true`
      */
-    show(outcome: Outcome, success: string): boolean {
+    show(outcome: Outcome, success: string, warnings: string[] = []): boolean {
         if (outcome.kind === 'error') {
             this.output.appendLine(`Error: ${outcome.message}`);
             void this.notify('error', outcome.message);
@@ -268,6 +269,10 @@ export class WabaHost implements vscode.Disposable {
         }
         for (const line of formatReport(outcome.report)) {
             this.output.appendLine(line);
+        }
+        if (outcome.report.ok && warnings.length > 0) {
+            void this.notify('warning', warnings.join(' '));
+            return true;
         }
         if (outcome.report.ok) {
             void vscode.window.showInformationMessage(`WABA DevTools: ${success}`);

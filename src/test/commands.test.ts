@@ -45,6 +45,58 @@ test('check runs in the project root with --json', async () => {
     assert.equal(path.resolve(call.cwd), path.resolve(fixture.project));
 });
 
+test('check shows a WABA_DISABLED warning in the output and as a warning notification', async () => {
+    const fixture = await setup();
+    const disabled = 'Meta has disabled this WABA (account review: REJECTED).';
+    fixture.respond({
+        check: [
+            {
+                stdout: {
+                    command: 'check',
+                    ok: true,
+                    entries: [
+                        {
+                            stage: 'dev',
+                            wabaId: '111',
+                            tokenEnv: 'WABA_TOKEN_NONPROD',
+                            ok: true,
+                            warnings: [{ code: 'WABA_DISABLED', message: disabled }],
+                        },
+                        { stage: 'qa', wabaId: '222', tokenEnv: 'WABA_TOKEN_NONPROD', ok: true },
+                    ],
+                },
+            },
+        ],
+    });
+    await fixture.run('check');
+    assert.ok(host.output.includes(`    WARN   ${disabled}`));
+    assert.deepEqual(
+        host.messages.map((message) => [message.level, message.text]),
+        [['warning', `WABA DevTools: WABA 111 (dev): ${disabled}`]],
+    );
+});
+
+test('check without warnings shows the success notification', async () => {
+    const fixture = await setup();
+    fixture.respond({
+        check: [
+            {
+                stdout: {
+                    command: 'check',
+                    ok: true,
+                    entries: [{ stage: 'qa', wabaId: '222', tokenEnv: 'T', ok: true }],
+                },
+            },
+        ],
+    });
+    await fixture.run('check');
+    assert.ok(host.output.every((line) => !line.includes('WARN')));
+    assert.deepEqual(
+        host.messages.map((message) => message.level),
+        ['info'],
+    );
+});
+
 test('a stored token reaches the CLI only as its environment variable', async () => {
     const fixture = await setup();
     host.quickPicks.push('WABA_TOKEN_NONPROD');

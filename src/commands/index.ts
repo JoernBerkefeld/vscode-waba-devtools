@@ -1,6 +1,6 @@
 import path from 'node:path';
 import * as vscode from 'vscode';
-import { compareMarkdown } from '../cli/format';
+import { checkWarnings, compareMarkdown } from '../cli/format';
 import type { CompareReport } from '../cli/types';
 import type { WabaHost } from '../host';
 import { CONFIG_FILE, templateNamesFor, tokenNames, type ProjectConfig } from '../project/config';
@@ -250,9 +250,14 @@ export function registerCommands(host: WabaHost, tree: TemplatesTree): vscode.Di
                 title: 'Checking access',
                 cancellable: true,
             });
-            if (outcome) {
-                host.show(outcome, 'every WABA is reachable.');
+            if (!outcome) {
+                return;
             }
+            const warnings =
+                outcome.kind === 'report' && outcome.report.command === 'check'
+                    ? checkWarnings(outcome.report)
+                    : [];
+            host.show(outcome, 'every WABA is reachable.', warnings);
         }),
         register('discover', async (config) => {
             const name = await pickTokenName(config, 'Which token variable should discover use?');

@@ -16,5 +16,6 @@ All notable changes to this extension are documented here. The format follows
 - Discover optionally asks for the business portfolio ID, shows when the token expires and, when
   Meta cannot list the WABAs, offers to retry with the portfolio ID or to enter the WABA IDs by
   hand.
+- Check Access warns when Meta has disabled a WABA, in the output and as a notification.
 - `.wabadevrc.json`, `.env` and backup manifests saved with a UTF-8 byte-order mark are read
   correctly.

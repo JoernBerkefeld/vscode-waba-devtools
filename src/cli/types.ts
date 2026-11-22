@@ -80,6 +80,10 @@ export interface CheckReport {
         wabaName?: string;
         ok: boolean;
         error?: string;
+        /**
+        Only on entries that reached the WABA, e.g. `WABA_DISABLED`; the check still passes.
+         */
+        warnings?: Array<{ code: string; message: string }>;
     }>;
     ok: boolean;
 }
