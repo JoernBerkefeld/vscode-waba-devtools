@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import { test } from 'node:test';
 import { summarizePreview } from '../cli/deployPlan';
+import { formatReport } from '../cli/format';
 import { interpretResult } from '../cli/result';
 import type { DeployReport } from '../cli/types';
 import { templateNamesFor, type ProjectConfig } from '../project/config';
@@ -146,6 +147,13 @@ test('result: exit 1 with a report is a report; {error} and non-JSON are errors'
         stderr: 'Unknown option\n\nHELP',
     });
     assert.deepEqual(usage.kind === 'error' && usage.message, 'Unknown option');
+    const coded = interpretResult({
+        exitCode: 2,
+        json: { command: 'discover', ok: false, error: 'x', code: 'BUSINESS_ID_REQUIRED' },
+        stdout: '',
+        stderr: '',
+    });
+    assert.equal(coded.kind === 'error' && coded.code, 'BUSINESS_ID_REQUIRED');
     const empty = interpretResult({ exitCode: -1, json: undefined, stdout: '', stderr: '' });
     assert.equal(empty.kind, 'error');
 });
@@ -203,4 +211,21 @@ test('tree: status per template and target-only templates', () => {
         describeStatus('dev', [{ wabaId: '1', action: 'create' }]),
         'dev: not in WABA · create',
     );
+});
+
+test('discover output shows the token type and expiry', () => {
+    const lines = formatReport({
+        command: 'discover',
+        tokenInfo: { type: 'SYSTEM_USER', expiresAt: null },
+        wabas: [{ wabaId: '1', name: 'Test' }],
+        ok: true,
+    });
+    assert.equal(lines[0], 'Token: SYSTEM_USER, never expires');
+    const expiring = formatReport({
+        command: 'discover',
+        tokenInfo: { type: 'USER', expiresAt: '2026-11-22T12:00:00.000Z' },
+        wabas: [],
+        ok: true,
+    });
+    assert.equal(expiring[0], 'Token: USER, expires 2026-11-22T12:00:00.000Z');
 });

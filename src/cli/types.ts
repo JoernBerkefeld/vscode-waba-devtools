@@ -97,6 +97,10 @@ export interface ListReport {
 
 export interface DiscoverReport {
     command: 'discover';
+    /**
+    What Meta says about the token; missing when Meta refused to describe it.
+     */
+    tokenInfo?: { type?: string; expiresAt?: string | null };
     wabas: Array<{
         wabaId: string;
         name?: string;

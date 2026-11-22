@@ -27,6 +27,10 @@ export const host = {
     messages: [] as Message[],
     output: [] as string[],
     documents: [] as Array<{ language?: string; content?: string }>,
+    /**
+    File paths opened in an editor with showTextDocument(uri).
+     */
+    shownFiles: [] as string[],
     settings: new Map<string, unknown>(),
     workspaceFolders: [] as Array<{ uri: Uri; name: string; index: number }>,
     /**
@@ -50,6 +54,7 @@ export function resetHost(): void {
         host.messages,
         host.output,
         host.documents,
+        host.shownFiles,
         host.quickPicks,
         host.messageAnswers,
         host.inputAnswers,
@@ -181,7 +186,13 @@ export const window = {
             { report: () => {} },
             { isCancellationRequested: false, onCancellationRequested: () => disposable },
         ),
-    showTextDocument: async () => ({}),
+    showTextDocument: async (document: unknown) => {
+        const fsPath = (document as { fsPath?: unknown } | undefined)?.fsPath;
+        if (typeof fsPath === 'string') {
+            host.shownFiles.push(fsPath);
+        }
+        return {};
+    },
     registerTreeDataProvider: () => disposable,
 };
 

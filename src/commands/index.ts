@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { compareMarkdown } from '../cli/format';
 import type { CompareReport } from '../cli/types';
 import type { WabaHost } from '../host';
-import { templateNamesFor, tokenNames, type ProjectConfig } from '../project/config';
+import { CONFIG_FILE, templateNamesFor, tokenNames, type ProjectConfig } from '../project/config';
 import { isValidTokenName } from '../state/tokens';
 import { statusFromPreview, type TemplatesTree } from '../tree/templatesTree';
 import { runConfirmedDeploy, nameArguments, runPreview, type DeployRequest } from './deploy';
@@ -133,6 +133,82 @@ async function showCompare(
 }
 
 /**
+Discover failures after which the WABA IDs can still be found by hand, and the two of them that
+the business portfolio ID can fix.
+ */
+const DISCOVER_CODES = new Set([
+    'TOKEN_INVALID',
+    'TOKEN_MISSING_PERMISSION',
+    'TOKEN_INFO_REFUSED',
+    'BUSINESS_ID_REQUIRED',
+    'BUSINESS_HAS_NO_WABAS',
+]);
+const NEEDS_BUSINESS = new Set(['TOKEN_INFO_REFUSED', 'BUSINESS_ID_REQUIRED']);
+const MANUAL = 'Enter WABA IDs Manually';
+const RETRY = 'Retry with Portfolio ID';
+
+/**
+ * Run `discover` for a token. When Meta cannot list the WABAs, offer the two ways on: the
+ * portfolio ID (`--business`), or typing the WABA IDs into `.wabadevrc.json` by hand.
+ * @param host extension services
+ * @param config project config
+ * @param name token variable name
+ * @param isBusinessRequired ask for the portfolio ID as required (retry) instead of optional
+ * @returns {Promise<void>} resolves when done
+ */
+async function discover(
+    host: WabaHost,
+    config: ProjectConfig,
+    name: string,
+    isBusinessRequired: boolean,
+): Promise<void> {
+    // Meta does not name the WABAs of a system-user token, so the CLI may need the portfolio.
+    const business = await vscode.window.showInputBox({
+        title: isBusinessRequired ? 'Business portfolio ID' : 'Business portfolio ID (optional)',
+        prompt: `Meta Business settings: the number after business_id= in the address bar.${isBusinessRequired ? '' : ' Leave empty to try without it.'}`,
+        placeHolder: 'e.g. 123456789012345',
+        ignoreFocusOut: true,
+        validateInput: (value) => {
+            if (!/^\d*$/.test(value.trim())) {
+                return 'Digits only.';
+            }
+            return isBusinessRequired && !value.trim() ? 'Enter the portfolio ID.' : undefined;
+        },
+    });
+    if (business === undefined) {
+        return;
+    }
+    const businessId = business.trim();
+    const outcome = await host.run(
+        config,
+        ['discover', '--token-env', name, ...(businessId ? ['--business', businessId] : [])],
+        { title: 'Discovering WABAs', cancellable: true, extraTokenNames: [name] },
+    );
+    if (!outcome) {
+        return;
+    }
+    if (outcome.kind !== 'error' || !outcome.code || !DISCOVER_CODES.has(outcome.code)) {
+        host.show(outcome, 'WABAs listed in the output.');
+        host.output.show(true);
+        return;
+    }
+    host.output.appendLine(`Error: ${outcome.message}`);
+    const buttons = !businessId && NEEDS_BUSINESS.has(outcome.code) ? [RETRY, MANUAL] : [MANUAL];
+    const answer = await vscode.window.showErrorMessage(
+        `WABA DevTools: ${outcome.message}`,
+        ...buttons,
+    );
+    if (answer === RETRY) {
+        await discover(host, config, name, true);
+    } else if (answer === MANUAL) {
+        await vscode.window.showTextDocument(vscode.Uri.file(path.join(config.root, CONFIG_FILE)));
+        void vscode.window.showInformationMessage(
+            'WABA DevTools: Business settings → Accounts → Messaging accounts shows each WABA as "ID: …" under its name. Put it into wabaId and the name of its token variable into tokenEnv (one token per business portfolio).',
+        );
+    }
+}
+
+/**
  * Register every command.
  * @param host extension services
  * @param tree templates tree (status refresh)
@@ -180,20 +256,9 @@ export function registerCommands(host: WabaHost, tree: TemplatesTree): vscode.Di
         }),
         register('discover', async (config) => {
             const name = await pickTokenName(config, 'Which token variable should discover use?');
-            if (!name) {
-                return;
+            if (name) {
+                await discover(host, config, name, false);
             }
-            const outcome = await host.run(config, ['discover', '--token-env', name], {
-                title: 'Discovering WABAs',
-                cancellable: true,
-                extraTokenNames: [name],
-            });
-            if (!outcome) {
-                return;
-            }
-
-            host.show(outcome, 'WABAs listed in the output.');
-            host.output.show(true);
         }),
         register('list', async (config) => {
             const stage = await pickStage(

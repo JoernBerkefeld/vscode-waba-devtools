@@ -135,7 +135,13 @@ export function formatReport(report: Report): string[] {
             return list(report);
         }
         case 'discover': {
-            return ['WABAs this token can reach:', ...discover(report)];
+            const info = report.tokenInfo;
+            const token = info
+                ? [
+                      `Token: ${info.type ?? 'unknown type'}, ${info.expiresAt ? `expires ${info.expiresAt}` : 'never expires'}`,
+                  ]
+                : [];
+            return [...token, 'WABAs this token can reach:', ...discover(report)];
         }
         case 'backup': {
             return ['Restore points:', ...backup(report)];

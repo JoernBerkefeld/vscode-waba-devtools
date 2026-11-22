@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseEnv } from 'node:util';
+import { stripBom } from '../project/config';
 
 /**
 Structural subset of `vscode.SecretStorage`.
@@ -32,7 +33,8 @@ export function isValidTokenName(name: string): boolean {
 async function dotenvKeys(root: string): Promise<Set<string>> {
     try {
         const text = await readFile(path.join(root, '.env'), 'utf8');
-        return new Set(Object.keys(parseEnv(text)));
+        const variables = parseEnv(stripBom(text));
+        return new Set(Object.keys(variables));
     } catch {
         return new Set();
     }

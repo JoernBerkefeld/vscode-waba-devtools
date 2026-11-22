@@ -2,7 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import * as vscode from 'vscode';
 import type { WabaHost } from '../host';
-import { allWabas, tokenNames, type ProjectConfig } from '../project/config';
+import { allWabas, stripBom, tokenNames, type ProjectConfig } from '../project/config';
 
 /**
 Returned by the WABA pickers when the user dismissed the pick.
@@ -170,7 +170,8 @@ export interface BackupSet {
  */
 export async function readBackupSet(fsPath: string): Promise<BackupSet | undefined> {
     try {
-        const manifest = JSON.parse(await readFile(path.join(fsPath, 'manifest.json'), 'utf8')) as {
+        const text = await readFile(path.join(fsPath, 'manifest.json'), 'utf8');
+        const manifest = JSON.parse(stripBom(text)) as {
             wabaId?: unknown;
             stage?: string;
             createdAt?: string;

@@ -142,11 +142,116 @@ test('discover passes --token-env and injects that stored token', async () => {
     const fixture = await setup();
     fixture.secrets.set('waba-devtools.token.OTHER_TOKEN', 'other');
     host.quickPicks.push('Other variable name…');
-    host.inputAnswers.push('OTHER_TOKEN');
+    host.inputAnswers.push('OTHER_TOKEN', '');
     await fixture.run('discover');
     const [call] = fixture.calls();
     assert.deepEqual(call.argv, ['discover', '--token-env', 'OTHER_TOKEN', '--json']);
     assert.equal(call.env.OTHER_TOKEN, 'other');
+});
+
+test('discover passes the business portfolio ID as --business', async () => {
+    const fixture = await setup();
+    host.quickPicks.push('WABA_TOKEN_NONPROD');
+    host.inputAnswers.push(' 123456789012345 ');
+    await fixture.run('discover');
+    assert.deepEqual(fixture.calls()[0].argv, [
+        'discover',
+        '--token-env',
+        'WABA_TOKEN_NONPROD',
+        '--business',
+        '123456789012345',
+        '--json',
+    ]);
+});
+
+test('discover: dismissing the business prompt runs nothing', async () => {
+    const fixture = await setup();
+    host.quickPicks.push('WABA_TOKEN_NONPROD');
+    await fixture.run('discover');
+    assert.equal(fixture.calls().length, 0);
+});
+
+const BOM = '\u{FEFF}';
+
+test('a .wabadevrc.json with a BOM still gives the stages', async () => {
+    const config = JSON.stringify({ stages: { only: [{ wabaId: '9', tokenEnv: 'T' }] } });
+    const fixture = await setup({ files: { '.wabadevrc.json': BOM + config } });
+    host.quickPicks.push((items) => {
+        assert.deepEqual(
+            (items as Array<{ label: string }>).map((item) => item.label),
+            ['only'],
+        );
+        return (items as unknown[])[0];
+    });
+    await fixture.run('list');
+    assert.deepEqual(fixture.calls()[0].argv, ['list', '--to', 'only', '--json']);
+});
+
+test('a .env with a BOM still wins over a stored token for its first variable', async () => {
+    const fixture = await setup({ files: { '.env': BOM + 'WABA_TOKEN_NONPROD=from-dotenv\n' } });
+    fixture.secrets.set('waba-devtools.token.WABA_TOKEN_NONPROD', 'stored');
+    await fixture.run('check');
+    assert.equal(fixture.calls()[0].env.WABA_TOKEN_NONPROD, null);
+});
+
+test('a backup set whose manifest has a BOM can be restored', async () => {
+    const set = 'backups/444_2026-11-20T10-00-00-000Z_before';
+    const fixture = await setup({
+        files: { [`${set}/manifest.json`]: BOM + JSON.stringify({ wabaId: '444' }) },
+    });
+    host.quickPicks.push(pickLabel('444'));
+    await fixture.run('restore', Uri.file(path.join(fixture.project, set)));
+    assert.deepEqual(fixture.calls()[0].argv.slice(0, 5), [
+        'deploy',
+        '--from-dir',
+        path.normalize(set),
+        '--to-waba',
+        '444',
+    ]);
+});
+
+const refused = {
+    exitCode: 2,
+    stdout: {
+        command: 'discover',
+        ok: false,
+        error: 'Meta does not describe this token',
+        code: 'TOKEN_INFO_REFUSED',
+    },
+};
+
+test('discover refused → "Retry with Portfolio ID" asks for the ID and passes --business', async () => {
+    const fixture = await setup();
+    fixture.respond({
+        discover: [refused, { stdout: { command: 'discover', wabas: [], ok: true } }],
+    });
+    host.quickPicks.push('WABA_TOKEN_NONPROD');
+    host.inputAnswers.push('', '555');
+    host.messageAnswers.push('Retry with Portfolio ID');
+    await fixture.run('discover');
+    const error = host.messages.find((message) => message.level === 'error');
+    assert.deepEqual(error?.buttons, ['Retry with Portfolio ID', 'Enter WABA IDs Manually']);
+    assert.deepEqual(
+        fixture.calls().map((call) => call.argv),
+        [
+            ['discover', '--token-env', 'WABA_TOKEN_NONPROD', '--json'],
+            ['discover', '--token-env', 'WABA_TOKEN_NONPROD', '--business', '555', '--json'],
+        ],
+    );
+});
+
+test('discover refused → "Enter WABA IDs Manually" opens .wabadevrc.json', async () => {
+    const fixture = await setup();
+    fixture.respond({ discover: [refused] });
+    host.quickPicks.push('WABA_TOKEN_NONPROD');
+    host.inputAnswers.push('777');
+    host.messageAnswers.push('Enter WABA IDs Manually');
+    await fixture.run('discover');
+    // With a portfolio ID already given, only the manual path is offered.
+    const error = host.messages.find((message) => message.level === 'error');
+    assert.deepEqual(error?.buttons, ['Enter WABA IDs Manually']);
+    assert.deepEqual(host.shownFiles, [path.join(fixture.project, '.wabadevrc.json')]);
+    assert.ok(host.messages.some((message) => /Messaging accounts/.test(message.text)));
 });
 
 test('backup of a picked stage writes to the backup folder', async () => {

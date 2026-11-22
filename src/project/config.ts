@@ -2,6 +2,18 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 export const CONFIG_FILE = '.wabadevrc.json';
+
+// U+FEFF, the byte-order mark.
+const BYTE_ORDER_MARK = 65_279;
+
+/**
+ * Drop a leading UTF-8 byte-order mark (some Windows editors write one), as the CLI does.
+ * @param text file content
+ * @returns {string} content without the BOM
+ */
+export function stripBom(text: string): string {
+    return text.codePointAt(0) === BYTE_ORDER_MARK ? text.slice(1) : text;
+}
 const DEFAULT_TEMPLATES_DIR = 'templates';
 
 export interface WabaEntry {
@@ -30,7 +42,8 @@ export interface ProjectConfig {
 export async function readProjectConfig(root: string): Promise<ProjectConfig> {
     let raw: unknown;
     try {
-        raw = JSON.parse(await readFile(path.join(root, CONFIG_FILE), 'utf8'));
+        const text = await readFile(path.join(root, CONFIG_FILE), 'utf8');
+        raw = JSON.parse(stripBom(text));
     } catch {
         raw = {};
     }

@@ -11,6 +11,10 @@ export type Outcome =
           kind: 'error';
           message: string;
           exitCode: number;
+          /**
+          The CLI's machine-readable reason, when it gives one (e.g. `TOKEN_INFO_REFUSED`).
+           */
+          code?: string;
       };
 
 /**
@@ -22,9 +26,14 @@ export type Outcome =
  * @returns {Outcome} the report or an error message
  */
 export function interpretResult(result: CliResult): Outcome {
-    const json = result.json as { command?: unknown; error?: unknown } | undefined;
+    const json = result.json as { command?: unknown; error?: unknown; code?: unknown } | undefined;
     if (json && typeof json === 'object' && typeof json.error === 'string') {
-        return { kind: 'error', message: json.error, exitCode: result.exitCode };
+        return {
+            kind: 'error',
+            message: json.error,
+            exitCode: result.exitCode,
+            ...(typeof json.code === 'string' && { code: json.code }),
+        };
     }
     if (json && typeof json === 'object' && typeof json.command === 'string') {
         return { kind: 'report', report: json as Report, exitCode: result.exitCode };
