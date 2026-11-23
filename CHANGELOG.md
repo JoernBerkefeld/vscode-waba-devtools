@@ -3,7 +3,7 @@
 All notable changes to this extension are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.0.1] - unreleased
+## [0.0.1] - 2026-11-23
 
 ### Added
 

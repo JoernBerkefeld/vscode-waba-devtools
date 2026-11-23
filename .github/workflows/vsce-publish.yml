@@ -22,6 +22,8 @@ jobs:
                   node-version: '24'
 
             - run: npm ci --no-workspaces
+            - name: Verify own packages are the newest published versions
+              run: npm run verify:own-dependencies-latest
             - run: npm run lint
             - run: npm run compile
             - name: Run tests
@@ -42,10 +44,10 @@ jobs:
               run: npx @vscode/vsce package --no-dependencies
             - name: Verify the VSIX bundles the CLI from the npm registry
               run: npm run verify:vsix
+            # Trusted Publishing: the Marketplace policy must name this repository, this workflow
+            # file (vsce-publish.yml) and no environment. No VSCE_PAT.
             - name: Publish to VS Code Marketplace
-              run: npx @vscode/vsce publish --packagePath *.vsix
-              env:
-                  VSCE_PAT: ${{ secrets.VSCE_PAT }}
+              run: npx @vscode/vsce publish --oidc --packagePath *.vsix
             - name: Upload vsix artifact for Open VSX
               uses: actions/upload-artifact@v7
               with:

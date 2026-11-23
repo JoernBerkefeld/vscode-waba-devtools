@@ -117,8 +117,8 @@ npm run lint
 npm test
 ```
 
-Press F5 in VS Code to start the Extension Development Host. Until `waba-devtools` is on npm, stage
-the bundled CLI from a local checkout:
+Press F5 in VS Code to start the Extension Development Host. `npm run bundle:cli` stages the CLI
+version pinned in `package.json`. To try an unreleased CLI, stage it from a local checkout instead:
 
 ```bash
 WABADEV_BUNDLE_SOURCE=../waba-devtools npm run bundle:cli

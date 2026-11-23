@@ -14,8 +14,16 @@
         "url": "https://github.com/JoernBerkefeld/vscode-waba-devtools/issues"
     },
     "publisher": "joernberkefeld",
-    "categories": ["Other"],
-    "keywords": ["whatsapp", "waba", "whatsapp business", "message templates", "devops"],
+    "categories": [
+        "Other"
+    ],
+    "keywords": [
+        "whatsapp",
+        "waba",
+        "whatsapp business",
+        "message templates",
+        "devops"
+    ],
     "engines": {
         "vscode": "^1.101.0"
     },
@@ -30,7 +38,9 @@
         }
     },
     "main": "./dist/extension.js",
-    "activationEvents": ["workspaceContains:.wabadevrc.json"],
+    "activationEvents": [
+        "workspaceContains:.wabadevrc.json"
+    ],
     "contributes": {
         "commands": [
             {
@@ -160,7 +170,11 @@
             "properties": {
                 "waba-devtools.cliSource": {
                     "type": "string",
-                    "enum": ["auto", "bundled", "custom"],
+                    "enum": [
+                        "auto",
+                        "bundled",
+                        "custom"
+                    ],
                     "enumDescriptions": [
                         "The project's own node_modules/waba-devtools if installed, otherwise the bundled CLI.",
                         "Always the CLI bundled with the extension.",
@@ -181,7 +195,11 @@
                 },
                 "waba-devtools.deployBackup": {
                     "type": "string",
-                    "enum": ["none", "before", "beforeAndAfter"],
+                    "enum": [
+                        "none",
+                        "before",
+                        "beforeAndAfter"
+                    ],
                     "enumDescriptions": [
                         "No backup.",
                         "Save every target WABA that is about to change before sending (--backup).",
@@ -404,7 +422,9 @@
         "package": "npx @vscode/vsce package --no-dependencies",
         "prepare": "husky || true",
         "bundle:cli": "node scripts/bundle-waba-devtools.mjs",
-        "verify:vsix": "node scripts/verify-vsix.mjs"
+        "verify:vsix": "node scripts/verify-vsix.mjs",
+        "verify:own-dependencies-latest": "node scripts/verify-own-dependencies-latest.mjs",
+        "preversion": "npm run verify:own-dependencies-latest"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
@@ -422,5 +442,8 @@
         "prettier": "^3.10.1",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.73.0"
+    },
+    "dependencies": {
+        "waba-devtools": "0.1.0"
     }
 }
