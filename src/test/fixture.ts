@@ -17,7 +17,7 @@ import * as extension from '../extension';
 import { host, resetHost, Uri } from './vscodeStub';
 
 export const repositoryRoot = path.resolve(__dirname, '..', '..', '..');
-export const fakeCli = path.join(repositoryRoot, 'test-fixtures', 'fake-cli', 'bin', 'wabadev.js');
+export const fakeCli = path.join(repositoryRoot, 'test-fixtures', 'fake-cli', 'bin', 'waba.js');
 
 export interface Call {
     argv: string[];

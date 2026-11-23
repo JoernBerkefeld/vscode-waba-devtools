@@ -123,7 +123,7 @@ test('an environment variable or .env entry wins over a stored token', async () 
 
 test('a usage error (not JSON) is shown as an error with the stderr text', async () => {
     const fixture = await setup();
-    fixture.respond({ check: [{ exitCode: 2, stderr: 'Unknown option --x\n\nwabadev — help' }] });
+    fixture.respond({ check: [{ exitCode: 2, stderr: 'Unknown option --x\n\nwaba — help' }] });
     await fixture.run('check');
     const error = host.messages.find((message) => message.level === 'error');
     assert.match(error?.text ?? '', /Unknown option --x/);

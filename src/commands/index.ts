@@ -542,7 +542,7 @@ export function registerCommands(host: WabaHost, tree: TemplatesTree): vscode.Di
             }
             const token = await vscode.window.showInputBox({
                 title: `Access token for ${name}`,
-                prompt: 'Stored in VS Code SecretStorage. Passed to wabadev only as this environment variable.',
+                prompt: 'Stored in VS Code SecretStorage. Passed to waba only as this environment variable.',
                 password: true,
                 ignoreFocusOut: true,
             });

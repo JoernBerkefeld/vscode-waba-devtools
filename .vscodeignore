@@ -20,5 +20,5 @@ node_modules/**
 eslint.config.mjs
 package-lock.json
 !dist/extension.js
-# Bundled wabadev runtime, staged by scripts/bundle-waba-devtools.mjs:
+# Bundled waba runtime, staged by scripts/bundle-waba-devtools.mjs:
 !dist/waba-devtools/**

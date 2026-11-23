@@ -193,7 +193,7 @@ export class WabaHost implements vscode.Disposable {
     }
 
     /**
-     * Run wabadev with `--json` in the project root and interpret the result. Runtime problems and
+     * Run waba with `--json` in the project root and interpret the result. Runtime problems and
      * cancellation are reported here and return `undefined`.
      * @param config project config
      * @param cliArguments arguments without `--json`
@@ -226,7 +226,7 @@ export class WabaHost implements vscode.Disposable {
         const arguments_ = [...cliArguments, '--json'];
         this.output.appendLine('');
         this.output.appendLine(
-            `> wabadev ${arguments_.join(' ')}   (${runtime.source} ${runtime.cliVersion})`,
+            `> waba ${arguments_.join(' ')}   (${runtime.source} ${runtime.cliVersion})`,
         );
         try {
             const result = await vscode.window.withProgress(

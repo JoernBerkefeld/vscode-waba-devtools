@@ -1,7 +1,7 @@
 /**
  * Verify a packaged VSIX: it must contain dist/extension.js and the full staged waba-devtools
  * closure (hash-identical to bundle-metadata.json), no symlinks and no build node_modules. The
- * closure is extracted into a fresh OS-temp run root and `wabadev --version` must print the
+ * closure is extracted into a fresh OS-temp run root and `waba --version` must print the
  * bundled version from there. A bundle staged from a local checkout is refused unless
  * --allow-local is given (development VSIX only, never a release).
  * Prints the VSIX size; above SIZE_LIMIT it fails and lists the biggest packages.
@@ -169,9 +169,9 @@ export async function verifyVsix(vsix, { allowLocal = false } = {}) {
                 windowsHide: true,
             },
         );
-        assert.equal(result.status, 0, `wabadev --version: ${result.error || result.stderr}`);
+        assert.equal(result.status, 0, `waba --version: ${result.error || result.stderr}`);
         assert.equal(result.stdout.trim(), metadata.version);
-        console.log(`Extracted bundle: wabadev --version printed ${metadata.version}`);
+        console.log(`Extracted bundle: waba --version printed ${metadata.version}`);
     } finally {
         await cleanUp(runRoot, marker, created);
     }

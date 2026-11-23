@@ -4,7 +4,7 @@ Retrieve, deploy, back up and compare **WhatsApp Business message templates** ac
 Business Accounts (WABAs) without leaving VS Code — for example one WABA per pipeline stage
 (dev → qa → prod).
 
-The extension runs the [`wabadev`](https://github.com/JoernBerkefeld/waba-devtools) CLI, which it
+The extension runs the [`waba`](https://github.com/JoernBerkefeld/waba-devtools) CLI, which it
 bundles: there is nothing else to install.
 
 ## Features
@@ -28,10 +28,10 @@ bundles: there is nothing else to install.
 
 - **Node.js** `^22.22.2 || >=24.15.0` on your `PATH` (the bundled CLI runs on it).
 - A project folder with a `.wabadevrc.json` — see the
-  [wabadev README](https://github.com/JoernBerkefeld/waba-devtools#configuration--wabadevrcjson)
+  [waba README](https://github.com/JoernBerkefeld/waba-devtools#configuration--wabadevrcjson)
   for the format.
 - A Meta system-user access token — the
-  [wabadev README: Access tokens](https://github.com/JoernBerkefeld/waba-devtools#access-tokens)
+  [waba-devtools README: Access tokens](https://github.com/JoernBerkefeld/waba-devtools#access-tokens)
   walks through Meta's screens.
 
 ## Getting started
@@ -88,7 +88,7 @@ bundles: there is nothing else to install.
 ## Access tokens
 
 How to create a token in Meta's Business settings:
-[wabadev README: Access tokens](https://github.com/JoernBerkefeld/waba-devtools#access-tokens).
+[waba-devtools README: Access tokens](https://github.com/JoernBerkefeld/waba-devtools#access-tokens).
 
 The CLI needs one token per `tokenEnv` name in `.wabadevrc.json`. Where it comes from, in order:
 
@@ -104,7 +104,7 @@ and never written to the output. **Check Access** shows which source each name u
 | Setting                       | Default   | Meaning                                                                                                         |
 | ----------------------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
 | `waba-devtools.cliSource`     | `auto`    | `auto`: the project's own `node_modules/waba-devtools` if installed, else the bundled CLI. `bundled`. `custom`. |
-| `waba-devtools.customCliPath` | —         | Absolute path of a `bin/wabadev.js`, used with `cliSource: custom`.                                             |
+| `waba-devtools.customCliPath` | —         | Absolute path of a `bin/waba.js`, used with `cliSource: custom`.                                             |
 | `waba-devtools.backupFolder`  | `backups` | Folder for backup sets (relative to the project).                                                               |
 | `waba-devtools.deployBackup`  | `before`  | `none`, `before` (back up each changed WABA first), or `beforeAndAfter`.                                        |
 
@@ -125,7 +125,7 @@ WABADEV_BUNDLE_SOURCE=../waba-devtools npm run bundle:cli
 ```
 
 or set `waba-devtools.cliSource` to `custom` and `waba-devtools.customCliPath` to the checkout's
-`bin/wabadev.js`.
+`bin/waba.js`.
 
 ## License
 

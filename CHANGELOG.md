@@ -9,7 +9,7 @@ All notable changes to this extension are documented here. The format follows
 
 - Templates view with the status of each template in the target stage.
 - Commands for check, discover, list, retrieve, CSV import, deploy (template files, source stage,
-  CSV, backup set), prune, restore points and compare, driven through the bundled `wabadev` CLI.
+  CSV, backup set), prune, restore points and compare, driven through the bundled `waba` CLI.
 - Preview and confirmation before every deploy, which then sends exactly the confirmed preview
   (`--expect`); prune only from the Command Palette.
 - Access tokens from the environment, `.env` or VS Code secret storage.

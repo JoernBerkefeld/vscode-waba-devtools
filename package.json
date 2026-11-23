@@ -1,7 +1,7 @@
 {
     "name": "waba-devtools",
     "displayName": "WABA DevTools",
-    "description": "Retrieve, deploy, back up and compare WhatsApp Business message templates across WABAs from VS Code, powered by the bundled wabadev CLI.",
+    "description": "Retrieve, deploy, back up and compare WhatsApp Business message templates across WABAs from VS Code, powered by the bundled waba CLI.",
     "author": "Jörn Berkefeld",
     "license": "MIT",
     "version": "0.0.1",
@@ -15,7 +15,7 @@
     },
     "publisher": "joernberkefeld",
     "categories": ["Other"],
-    "keywords": ["whatsapp", "waba", "whatsapp business", "message templates", "devops", "wabadev"],
+    "keywords": ["whatsapp", "waba", "whatsapp business", "message templates", "devops"],
     "engines": {
         "vscode": "^1.101.0"
     },
@@ -164,15 +164,15 @@
                     "enumDescriptions": [
                         "The project's own node_modules/waba-devtools if installed, otherwise the bundled CLI.",
                         "Always the CLI bundled with the extension.",
-                        "Only the bin/wabadev.js set in customCliPath. Never falls back."
+                        "Only the bin/waba.js set in customCliPath. Never falls back."
                     ],
                     "default": "auto",
-                    "description": "Which wabadev CLI the extension runs."
+                    "description": "Which waba CLI the extension runs."
                 },
                 "waba-devtools.customCliPath": {
                     "type": "string",
                     "default": "",
-                    "description": "Absolute path of a waba-devtools bin/wabadev.js, used when cliSource is custom."
+                    "description": "Absolute path of a waba-devtools bin/waba.js, used when cliSource is custom."
                 },
                 "waba-devtools.backupFolder": {
                     "type": "string",

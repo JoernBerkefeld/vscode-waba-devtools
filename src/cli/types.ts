@@ -1,5 +1,5 @@
 /**
- * The `--json` report shapes of the wabadev CLI (waba-devtools lib/commands.js and
+ * The `--json` report shapes of the waba CLI (waba-devtools lib/commands.js and
  * lib/compare.js). Only the fields the extension reads are typed; everything is optional where
  * the CLI may leave it out.
  */

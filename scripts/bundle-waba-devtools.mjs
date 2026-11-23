@@ -1,7 +1,7 @@
 /**
- * Stage the wabadev CLI (package waba-devtools) and its production dependency closure into
+ * Stage the waba CLI (package waba-devtools) and its production dependency closure into
  * dist/waba-devtools/ (bin/, lib/, package.json, LICENSE, node_modules/), so the extension can
- * run `node dist/waba-devtools/bin/wabadev.js ...` without a separate install.
+ * run `node dist/waba-devtools/bin/waba.js ...` without a separate install.
  * Adapted from vscode-data360/scripts/bundle-sf-plugin-data.mjs.
  *
  * Two sources:
@@ -229,11 +229,11 @@ export async function bundleWabaDevtools({
     const manifest = JSON.parse(
         await fs.readFile(path.join(base, rootKey, 'package.json'), 'utf8'),
     );
-    if (manifest.name !== CLI || manifest.type !== 'module' || !manifest.bin?.wabadev) {
-        throw new Error(`Expected the ${CLI} ESM package with the wabadev binary.`);
+    if (manifest.name !== CLI || manifest.type !== 'module' || !manifest.bin?.waba) {
+        throw new Error(`Expected the ${CLI} ESM package with the waba binary.`);
     }
-    if (!files.has('bin/wabadev.js') || typeof manifest.engines?.node !== 'string') {
-        throw new Error(`Expected ${CLI} with bin/wabadev.js and engines.node.`);
+    if (!files.has('bin/waba.js') || typeof manifest.engines?.node !== 'string') {
+        throw new Error(`Expected ${CLI} with bin/waba.js and engines.node.`);
     }
     const hashes = Object.fromEntries(
         [...files].sort(([a], [b]) => a.localeCompare(b)).map(([file, item]) => [file, item.hash]),
@@ -245,7 +245,7 @@ export async function bundleWabaDevtools({
         name: manifest.name,
         version: manifest.version,
         nodeEngine: manifest.engines.node,
-        cliJs: 'bin/wabadev.js',
+        cliJs: 'bin/waba.js',
         packages,
         files: hashes,
     };

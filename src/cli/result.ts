@@ -42,7 +42,7 @@ export function interpretResult(result: CliResult): Outcome {
     const firstBlock = detail.split(/\r?\n\r?\n/, 1)[0] ?? '';
     return {
         kind: 'error',
-        message: firstBlock || `wabadev ended with exit code ${result.exitCode} and no output.`,
+        message: firstBlock || `waba ended with exit code ${result.exitCode} and no output.`,
         exitCode: result.exitCode,
     };
 }

@@ -16,7 +16,7 @@ export interface ResolvedRuntime {
      */
     node: string;
     /**
-    Absolute path of waba-devtools' `bin/wabadev.js`.
+    Absolute path of waba-devtools' `bin/waba.js`.
      */
     cliJs: string;
     cliVersion: string;
@@ -154,19 +154,19 @@ export async function resolveCliRuntime(
         if (!custom) {
             throw new RuntimeError(
                 'custom-invalid',
-                `Set ${CUSTOM_SETTING} to the bin/wabadev.js of a waba-devtools checkout when ${SOURCE_SETTING} is custom.`,
+                `Set ${CUSTOM_SETTING} to the bin/waba.js of a waba-devtools checkout when ${SOURCE_SETTING} is custom.`,
             );
         }
         cliJs = paths.normalize(custom);
         if (
             !paths.isAbsolute(cliJs) ||
-            paths.basename(cliJs) !== 'wabadev.js' ||
+            paths.basename(cliJs) !== 'waba.js' ||
             paths.basename(paths.dirname(cliJs)) !== 'bin' ||
             !file(cliJs)
         ) {
             throw new RuntimeError(
                 'custom-invalid',
-                `${CUSTOM_SETTING} must be the absolute path of an existing waba-devtools bin/wabadev.js: ${custom}`,
+                `${CUSTOM_SETTING} must be the absolute path of an existing waba-devtools bin/waba.js: ${custom}`,
             );
         }
         cli = readCliPackage(paths.dirname(paths.dirname(cliJs)), read, paths);
@@ -179,7 +179,7 @@ export async function resolveCliRuntime(
     } else if (source === 'auto' || source === 'bundled') {
         if (source === 'auto' && options.projectRoot) {
             const projectPackage = paths.join(options.projectRoot, 'node_modules', PACKAGE_NAME);
-            const projectCli = paths.join(projectPackage, 'bin', 'wabadev.js');
+            const projectCli = paths.join(projectPackage, 'bin', 'waba.js');
             const projectInfo = file(projectCli)
                 ? readCliPackage(projectPackage, read, paths)
                 : undefined;
@@ -191,12 +191,12 @@ export async function resolveCliRuntime(
         }
         if (!selected) {
             selected = 'bundled';
-            cliJs = paths.join(options.bundleRoot, 'bin', 'wabadev.js');
+            cliJs = paths.join(options.bundleRoot, 'bin', 'waba.js');
             cli = file(cliJs) ? readCliPackage(options.bundleRoot, read, paths) : undefined;
             if (!cli) {
                 throw new RuntimeError(
                     'bundle-missing',
-                    `The bundled wabadev CLI is missing or damaged (${options.bundleRoot}). Reinstall the extension.`,
+                    `The bundled waba CLI is missing or damaged (${options.bundleRoot}). Reinstall the extension.`,
                 );
             }
         }
@@ -207,7 +207,7 @@ export async function resolveCliRuntime(
         );
     }
     if (!cli) {
-        throw new RuntimeError('bundle-missing', 'No wabadev CLI found.');
+        throw new RuntimeError('bundle-missing', 'No waba CLI found.');
     }
 
     const node = findOnPath(
@@ -219,7 +219,7 @@ export async function resolveCliRuntime(
     if (!node) {
         throw new RuntimeError(
             'node-unavailable',
-            `wabadev requires Node.js ${cli.nodeEngine} on PATH. Install a compatible Node.js and restart VS Code.`,
+            `waba requires Node.js ${cli.nodeEngine} on PATH. Install a compatible Node.js and restart VS Code.`,
         );
     }
     let versionText: string;
@@ -236,7 +236,7 @@ export async function resolveCliRuntime(
     if (!version || !satisfies?.(version)) {
         throw new RuntimeError(
             'node-unsupported',
-            `Node.js ${versionText} at ${node} does not satisfy wabadev's requirement ${cli.nodeEngine}. Install a compatible Node.js on PATH and restart VS Code.`,
+            `Node.js ${versionText} at ${node} does not satisfy waba's requirement ${cli.nodeEngine}. Install a compatible Node.js on PATH and restart VS Code.`,
         );
     }
     return { source: selected, node, cliJs, cliVersion: cli.version };

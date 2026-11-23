@@ -1,5 +1,5 @@
 # Publishes the VS Code extension to the Visual Studio Marketplace and Open VSX when a release is
-# created. The VSIX bundles the wabadev CLI (waba-devtools) from the npm registry.
+# created. The VSIX bundles the waba CLI (waba-devtools) from the npm registry.
 
 name: Publish VS Code Extension on Release
 

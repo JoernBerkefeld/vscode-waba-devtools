@@ -36,9 +36,9 @@ function dependencies(files: Record<string, string>, nodeVersion = 'v24.1.0') {
 
 test('runtime: auto prefers the project copy, else bundled', async () => {
     const files = {
-        '/p/node_modules/waba-devtools/bin/wabadev.js': '',
+        '/p/node_modules/waba-devtools/bin/waba.js': '',
         '/p/node_modules/waba-devtools/package.json': cliPackage,
-        '/ext/dist/waba-devtools/bin/wabadev.js': '',
+        '/ext/dist/waba-devtools/bin/waba.js': '',
         '/ext/dist/waba-devtools/package.json': cliPackage,
     };
     const project = await resolveCliRuntime(
@@ -46,7 +46,7 @@ test('runtime: auto prefers the project copy, else bundled', async () => {
         dependencies(files),
     );
     assert.equal(project.source, 'project');
-    assert.equal(project.cliJs, posix.join('/p/node_modules/waba-devtools/bin/wabadev.js'));
+    assert.equal(project.cliJs, posix.join('/p/node_modules/waba-devtools/bin/waba.js'));
     const bundled = await resolveCliRuntime(
         { source: 'auto', projectRoot: '/other', bundleRoot: '/ext/dist/waba-devtools' },
         dependencies(files),
@@ -57,7 +57,7 @@ test('runtime: auto prefers the project copy, else bundled', async () => {
 
 test('runtime: bundled and custom never fall back', async () => {
     const files = {
-        '/p/node_modules/waba-devtools/bin/wabadev.js': '',
+        '/p/node_modules/waba-devtools/bin/waba.js': '',
         '/p/node_modules/waba-devtools/package.json': cliPackage,
     };
     await assert.rejects(
@@ -69,7 +69,7 @@ test('runtime: bundled and custom never fall back', async () => {
     );
     await assert.rejects(
         resolveCliRuntime(
-            { source: 'custom', customPath: 'relative/bin/wabadev.js', bundleRoot: '/x' },
+            { source: 'custom', customPath: 'relative/bin/waba.js', bundleRoot: '/x' },
             dependencies(files),
         ),
         (error: RuntimeError) => error.code === 'custom-invalid',
@@ -84,7 +84,7 @@ test('runtime: bundled and custom never fall back', async () => {
     const custom = await resolveCliRuntime(
         {
             source: 'custom',
-            customPath: '/p/node_modules/waba-devtools/bin/wabadev.js',
+            customPath: '/p/node_modules/waba-devtools/bin/waba.js',
             bundleRoot: '/x',
         },
         dependencies(files),
@@ -94,7 +94,7 @@ test('runtime: bundled and custom never fall back', async () => {
 
 test('runtime: a package that is not waba-devtools is refused', async () => {
     const files = {
-        '/c/bin/wabadev.js': '',
+        '/c/bin/waba.js': '',
         '/c/package.json': JSON.stringify({
             name: 'other',
             version: '1.0.0',
@@ -103,7 +103,7 @@ test('runtime: a package that is not waba-devtools is refused', async () => {
     };
     await assert.rejects(
         resolveCliRuntime(
-            { source: 'custom', customPath: '/c/bin/wabadev.js', bundleRoot: '/x' },
+            { source: 'custom', customPath: '/c/bin/waba.js', bundleRoot: '/x' },
             dependencies(files),
         ),
         (error: RuntimeError) => error.code === 'custom-invalid',
@@ -111,7 +111,7 @@ test('runtime: a package that is not waba-devtools is refused', async () => {
 });
 
 test('runtime: Node.js on PATH must satisfy the CLI engine', async () => {
-    const files = { '/b/bin/wabadev.js': '', '/b/package.json': cliPackage };
+    const files = { '/b/bin/waba.js': '', '/b/package.json': cliPackage };
     await assert.rejects(
         resolveCliRuntime({ source: 'bundled', bundleRoot: '/b' }, dependencies(files, 'v20.0.0')),
         (error: RuntimeError) => error.code === 'node-unsupported',

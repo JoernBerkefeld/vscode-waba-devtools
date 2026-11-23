@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Fake wabadev for the extension tests. Records each call (arguments and the values of the
+// Fake waba for the extension tests. Records each call (arguments and the values of the
 // variables named in FAKE_WABADEV_WATCH) to FAKE_WABADEV_LOG as one JSON line, and answers from
 // FAKE_WABADEV_RESPONSES: {"<command>": [{exitCode, stdout, stderr}, …]}, the n-th call of a
 // command getting the n-th answer (the last one repeats).

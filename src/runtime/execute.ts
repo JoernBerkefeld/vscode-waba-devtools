@@ -40,7 +40,7 @@ Rejection reason when the cancellation token fired; the child process has been k
  */
 export class CliCancelledError extends Error {
     constructor() {
-        super('The wabadev run was cancelled.');
+        super('The waba run was cancelled.');
         this.name = 'CliCancelledError';
     }
 }
@@ -58,7 +58,7 @@ function parseJson(text: string): unknown {
 }
 
 /**
- * Run `node <wabadev.js> ...args` without a shell. Arguments are passed through unchanged.
+ * Run `node <waba.js> ...args` without a shell. Arguments are passed through unchanged.
  * @param runtime the resolved runtime
  * @param cliArguments CLI arguments, e.g. `['check', '--json']`
  * @param options working directory, environment, cancellation and stderr streaming

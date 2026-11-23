@@ -23,7 +23,7 @@ const executable =
 if (process.platform === 'win32' && !fs.existsSync(executable)) {
     throw new Error(`VS Code not found at ${executable}; set VSCODE_EXECUTABLE.`);
 }
-if (!fs.existsSync(path.join(projectRoot, 'dist', 'waba-devtools', 'bin', 'wabadev.js'))) {
+if (!fs.existsSync(path.join(projectRoot, 'dist', 'waba-devtools', 'bin', 'waba.js'))) {
     throw new Error('Stage the bundled CLI first: npm run bundle:cli');
 }
 
@@ -53,7 +53,7 @@ write(
             'test-fixtures',
             'fake-cli',
             'bin',
-            'wabadev.js',
+            'waba.js',
         ),
         'security.workspace.trust.enabled': false,
     }),

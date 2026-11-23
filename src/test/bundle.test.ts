@@ -48,11 +48,11 @@ function checkout(name: string, dependencyLock: object): string {
         name: 'waba-devtools',
         version: '1.0.0',
         type: 'module',
-        bin: { wabadev: './bin/wabadev.js' },
+        bin: { waba: './bin/waba.js' },
         engines: { node: '>=22.0.0' },
         dependencies: { dep: '^1.0.0' },
     });
-    write(path.join(folder, 'bin', 'wabadev.js'), "import '../lib/cli.js';\n");
+    write(path.join(folder, 'bin', 'waba.js'), "import '../lib/cli.js';\n");
     write(path.join(folder, 'lib', 'cli.js'), 'export {};\n');
     write(path.join(folder, 'LICENSE'), 'MIT\n');
     write(path.join(folder, 'README.md'), '# not shipped\n');
@@ -95,7 +95,7 @@ test('bundle from a local checkout stages bin, lib, LICENSE and the dependency c
     assert.deepEqual(
         Object.keys(metadata.files).toSorted((a, b) => a.localeCompare(b)),
         [
-            'bin/wabadev.js',
+            'bin/waba.js',
             'lib/cli.js',
             'LICENSE',
             'node_modules/dep/index.js',
@@ -107,7 +107,7 @@ test('bundle from a local checkout stages bin, lib, LICENSE and the dependency c
     const written = JSON.parse(
         readFileSync(path.join(destination, 'bundle-metadata.json'), 'utf8'),
     );
-    assert.equal(written.cliJs, 'bin/wabadev.js');
+    assert.equal(written.cliJs, 'bin/waba.js');
     // A second run over its own output is fine; an unregistered file is refused.
     await bundle({ destination, localCheckout: path.join(runRoot, 'local') });
     write(path.join(destination, 'stray.txt'), 'x');

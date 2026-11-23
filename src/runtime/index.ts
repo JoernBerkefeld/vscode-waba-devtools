@@ -26,7 +26,7 @@ async function forgetOnFailure(entry: CacheEntry): Promise<void> {
 }
 
 /**
- * Resolve the wabadev runtime from the current settings. Cached until `cliSource`,
+ * Resolve the waba runtime from the current settings. Cached until `cliSource`,
  * `customCliPath` or the project root changes; a failed resolution is not cached.
  * @param projectRoot folder holding `.wabadevrc.json`
  * @returns {Promise<ResolvedRuntime>} the resolved runtime; rejects with `RuntimeError`
@@ -69,7 +69,7 @@ export interface RunCliOptions {
 }
 
 /**
- * Run wabadev with exactly the given arguments (`node <wabadev.js> ...args`, no shell).
+ * Run waba with exactly the given arguments (`node <waba.js> ...args`, no shell).
  * @param runtime the resolved runtime
  * @param cliArguments e.g. `['check', '--json']`
  * @param options working directory, environment, cancellation token and stderr callback
